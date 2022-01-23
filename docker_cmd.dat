@@ -1,0 +1,150 @@
+
+docker images 
+
+docker run "images"
+
+docker run --name ws1 httpd
+
+# 포트맵핑하면서 컨테이너 구동
+docker run --name ws1 -p 8081:80 httpd
+
+# 구동하면서 컨테이너 안으로 진입
+docker run -it -name ws1 httpd bash
+
+docker ps -a
+
+docker stop ws2
+
+docker start ws2
+
+docker logs -f ws1
+
+# 컨테이너 삭제
+docker rm ws1
+
+# 이미지까지 삭제
+docker rmi ws1
+
+# cli로 컨테이너에 붙을때 (-it 는 나중에 공부하고 일단 쓰자)
+docker exec -it ws2 /bin/bash
+docker exec -it ws3 /bin/sh
+나갈때는 exit
+
+
+# 컨테이너 구동 시 로컬 디렉토리와 연결해서 구동하기 (-v 옵션)
+                                    #로컬 위치                  : #컨테이너 src 위치
+docker run --name ws1 -p 8081:80 -v C:/DockerWorkSpace/htdocs:/usr/local/apache2/htdocs/ httpd
+docker run --name ws2 -p 8082:80 -v C:/DockerWorkSpace/htdocs:/usr/local/apache2/htdocs/ httpd
+docker run --name ws3 -p 8083:80 -v C:/DockerWorkSpace/htdocs:/usr/local/apache2/htdocs/ httpd
+
+# 컨테이너 강제 종료 후 삭제
+docker rm -f ws3
+
+docker commit ws1 
+
+# mysql pull 하면서 바로 컨테이너 구동
+docker run -d -p 9501:3306 -e MYSQL_ROOT_PASSWORD=password mysql:5.7
+
+
+
+
+
+
+
+
+docker run --name mysql_1 -p 9501:3306 -v C:/DockerWorkSpace/htdocs:/usr/local/apache2/htdocs/ httpd
+
+
+docker run -it --name mysql_1 mysql
+
+#mysql 구동 (pull 하면서 )
+docker run -d -p 9501:3306 -e MYSQL_ROOT_PASSWORD=password mysql:5.7
+
+# cli로 컨테이너에 붙을때 (-it 는 나중에 공부하고 일단 쓰자)
+docker exec -it 4638b9515b5e  /bin/bash
+ - mysql -u root -p
+ - 기본 패스워드는 "password" 이다
+
+create user cho@localhost identified by 'Qwer1234!';
+create user cho@'%' identified by 'Qwer1234!';
+create database cho_db default character set utf8;
+grant all privileges on cho_db.* to 'cho'@'%';
+
+
+#ubuntu 구동 (pull 하면서 )
+docker pull ubuntu
+
+docker container  run -it ubuntu /bin/bash
+
+# 유저생성
+useradd -d /home/cho cho
+password Qwer1234!
+
+# sudo 설치
+apt-get update && apt-get install -y sudo
+
+#root 로  git 설치
+apt-get install git
+
+#해당 컨테이너 이미지로 만들기
+docker commit CONTAINER ID 레파지토리 정의
+docker commit 7da521df9380 cho:ubuntu-git_pytyon  <- ubuntu
+docker commit 4638b9515b5e cho:ubuntu-make_table  <- mysql
+
+
+#만들어놓은 이미지로 다시 구동
+
+docker run -it --name ubuntu_2 cho:ubuntu-git_pytyon
+( git 과 파이썬이 정상 설치된 상태로 구동된다 )
+docker run -it --name mysql_2 cho:mysql-make_table
+( DB 스키마는 저장되지 않은것이 확인된다, 이건 아마 data 부분은 외부와 마운트 시키는걸로 해결? )
+
+
+
+
+
+# docker 파일로 이미지 만들기
+docker build -t cho_python .
+((
+FROM ubuntu:20.04
+RUN apt update && apt install -y python
+
+# mkdir -> cd 
+WORKDIR /home/python/workspace
+COPY ["db_handle.py", "."]
+CMD ["python", "-u", "-m", "db_handle.py"]
+))
+
+
+
+
+#먼저 commit 으로 이미지 만들고 그 레파지토리/태그 이름으로 push
+docker push linux1218/python:1.0.0
+
+
+# 로그인 된상태에서 내 docker hub에서 다운받기
+docker pull linux1218/python:1.0.0
+
+
+# git hub  dev tokens
+???
+
+# git hub 로그인
+docker login ghcr.io -u linux -p ???
+
+# git hub 에 올릴 이미지 만들기 commit 
+docker commit cho_python ghcr.io/linux1218/my_ubuntu:1.0.1
+
+
+
+docker rm --force app
+docker network rm wordpress_net
+
+
+
+docker-compose up
+docker-compose down
+
+# 검색
+docker search nginx
+
